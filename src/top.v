@@ -1,5 +1,5 @@
 
-Definition subset {A : Type} (u v : A -> Prop) := (forall x : A, u x -> v x).
+Definition subset (A : Type) (u v : A -> Prop) := (forall x : A, u x -> v x).
 Definition disjoint (A : Type) (u v : A -> Prop) := forall x, ~ (u x /\ v x).
 Definition union (A : Type) (B : (A -> Prop) -> Prop) := fun x : A => exists U, B U /\ U x.
 Definition inter (A : Type) (u v : A -> Prop) := fun x : A => u x /\ v x.
@@ -8,10 +8,10 @@ Definition full (A: Type) := fun x : A => True.
 
 Structure topology (A : Type) := {
           open :> (A -> Prop) -> Prop;
-          empty_open: open (empty A);
-          full_open: open (full A);
+          empty_open: open (empty _);
+          full_open: open (full _);
           inter_open: forall u, open u -> forall v, open v -> open (inter A u v) ;
-          union_open: forall s, (subset s open) -> open (union A s) }.
+          union_open: forall s, (subset _ s open) -> open (union A s) }.
 
 (* The discrete topology on a type. *)
 Definition discrete (A : Type) : topology A.
@@ -70,8 +70,8 @@ Notation "u <= v" := (subset u v).
 (* Let us prove that the indiscrete topology is the least one.
    We seem to need extensionality for propositions. *)
 Lemma indiscrete_least (A : Type) (T : topology A) :
-  (forall (X : Type) (s t : X -> Prop), (subset s t) -> (subset t s) -> s = t) ->
-  subset (indiscrete A) T.
+  (forall (X : Type) (s t : X -> Prop), (subset _ s t) -> (subset _ t s) -> s = t) ->
+  subset _ (indiscrete A) T.
 Proof.
   intros ext u H.
   (* Idea: if u is in the indiscrete topology then it is the union of all T-opens v which it meets. *)
@@ -135,7 +135,7 @@ Definition base {A : Type} (B : (A->Prop) -> Prop) :
   B (full _) -> (forall u, B u -> forall v, B v -> B (inter A u v)) -> topology A.
 Proof.
   intros H G.
-  exists (fun u : A -> Prop => forall x, u x <-> exists v0, B v0 /\ (v0 x /\ v0 <= u) ).
+  exists (fun u : A -> Prop => forall x, u x <-> exists v, B v /\ (v x /\ (subset _ v u))).
   - firstorder.
   - firstorder.
   - intros u Hu v Hv x.
