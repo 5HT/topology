@@ -1,7 +1,7 @@
 
 Definition subset {A : Type} (u v : A -> Prop) := (forall x : A, u x -> v x).
 Definition disjoint (A : Type) (u v : A -> Prop) := forall x, ~ (u x /\ v x).
-Definition union (A : Type) (S : (A -> Prop) -> Prop) := fun x : A => exists U, S U /\ U x.
+Definition union (A : Type) (B : (A -> Prop) -> Prop) := fun x : A => exists U, B U /\ U x.
 Definition inter (A : Type) (u v : A -> Prop) := fun x : A => u x /\ v x.
 Definition empty (A: Type) := fun x : A => False.
 Definition full (A: Type) := fun x : A => True.
@@ -131,7 +131,7 @@ Proof.
   inversion H ; auto.
 Qed.
 
-Definition base {A : Type} (B : (A->Prop) -> Prop) : 
+Definition base {A : Type} (B : (A->Prop) -> Prop) :
   B (full _) -> (forall u, B u -> forall v, B v -> B (inter A u v)) -> topology A.
 Proof.
   intros H G.
